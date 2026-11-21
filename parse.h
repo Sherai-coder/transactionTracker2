@@ -1,6 +1,8 @@
 #include <iostream>
 #include "transaction.h"
 #include "dateToString.h"
+#include "date.h"
+#include <optional>
 
 enum class ParseStatus
 {
@@ -29,10 +31,13 @@ struct ParseResultDescription
     std::string description;
 };
 
-struct ParseDateResult
+
+struct ParseDateDateResult
 {
     ParseStatus status;
-    std::string date;
+    int day;
+    int month;
+    int year;
 };
 
 struct ParseTransactionResult
@@ -42,18 +47,18 @@ struct ParseTransactionResult
     double amount;
     TransactionType type;
     Category category;
-    std::string date;
     std::string description;
+    std::optional<Date> date;
 };
 
 
 
 ParseResultInt tryParseId(const std::string& idStr);
 ParseResultDouble tryParseAmount(const std::string& amountStr);
-ParseDateResult tryParseDate(const std::string& dateStr);
 ParseResultDescription tryParseDescription(const std::string& description);
-ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string& amountStr,const std::string&  dateStr,const std::string&  description,
-                                           const std::string& categoryStr,const std::string&  typeStr);
+ParseDateDateResult tryParseDateDate(const std::string& dateDateStr);
+ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string& amountStr,const std::string&  description,
+                                           const std::string& categoryStr,const std::string&  typeStr, std::string& dateDateStr);
 
 
 

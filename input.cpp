@@ -49,12 +49,6 @@ std::string getNumber(const std::string& message, const int& minRange, const int
     }
 }
 
-std::string returnDate(const std::string message)
-{
-    std::cout<<message<<std::endl;
-    return getNumber("Day: ",1,31)+":"+getNumber("Month: ",1,12)+":"+getNumber("Year: ", 1,2026);
-}
-
 TransactionType getTransactionType(const std::string& message)
 {
     std::string transactionTypeStr;
@@ -142,4 +136,19 @@ void pause()
     std::cout<<"Press button to continue."<<std::endl;
     getch();
     system("cls");
+}
+
+std::optional<Date> returnDateDate(const std::string& message)
+{
+    std::cout<<message<<std::endl;
+    int year = getInt("Enter year: ", 1, 2100);
+    int month = getInt("Enter month: ", 1, 12);
+    int howManyDaysThisMonthHas=Date::daysOfMonthDate(month,year);
+    if(howManyDaysThisMonthHas==0)
+    {
+        return std::nullopt;
+    }
+    int day = getInt("Enter day: ", 1,howManyDaysThisMonthHas);
+    Date date(day,month,year);
+    return date;
 }

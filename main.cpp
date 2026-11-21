@@ -8,15 +8,16 @@
 
 using namespace std;
 
-
+TransactionManager transactions;
 
 int main()
 {
-    Transaction transaction(1,2,TransactionType::income, Category::car,"20.2.1994","blablabla");
+    Menu menu(transactions);
+    menu.menuRun();
 
-    Date date(+10,01,1994);
-    string data = date.showDate();
-    cout<<data<<endl;
+
+
+
 
 
 

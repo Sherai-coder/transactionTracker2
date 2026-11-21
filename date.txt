@@ -1,7 +1,2 @@
-6
-1|1001|income|work|2.1.1994|Working 10 hours as a driver.
-2|1500|income|business|10.11.2025|Income from selling books.
-3|1|expenses|car|10.11.2025|Income from selling books.
-4|15|expenses|home|10.11.2025|Income from selling books.
-5|3000|expenses|holiday|10.11.2025|Income from selling books.
-6|155|expenses|car|10.11.2025|Income from selling books.
+1
+1|100|income|work||kamil|10.12.2025

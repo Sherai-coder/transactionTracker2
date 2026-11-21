@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include "date.h"
 
 
 enum class TransactionType
@@ -27,29 +28,27 @@ class Transaction
     double amount;
     TransactionType type;
     Category category;
-    std::string dateStr;
     std::string description;
+    Date date;
 public:
-    Transaction(int id,double a, TransactionType t, Category c,std::string dateStr, std::string description);
+    Transaction(int id,double a, TransactionType t, Category c, std::string description, Date date);
     void showTransaction() const;
     int getId() const;
     double getAmount() const;
     TransactionType getType() const;
     Category getCategory() const;
-
+    Date getDate() const;
+    int dateGetDay();
+    int dateGetMonth();
+    int dateGetYear();
+    std::string saveDate(Date date);
+    bool dateSetDate(int day, int month, int year);
     int getDay();
     int getMonth();
     int getYear();
-    std::string getDateStr() const;
     std::string getDescription() const;
     void changeAmount(double newAmount);
     void changeType(TransactionType newType);
     void changeCategory(Category newCategory);
-    void changeDate(const std::string& newDate);
     void changeDescription(std::string newDescription);
-    bool validationOfDate(std::string dateStr);
-    int dateConverter(std::string& dateStr);
-    std::size_t countWhiteSpaces(std::string dateStr);
-    std::string trimSpaces(std::string& dateStr);
-    bool isNumeric(std::string& dateStr);
 };

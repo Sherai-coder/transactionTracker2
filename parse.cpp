@@ -2,6 +2,8 @@
 #include "parse.h"
 #include <sstream>
 
+
+
 ParseResultInt tryParseId(const std::string& idStr)
 {
     std::size_t pos=0;
@@ -46,35 +48,6 @@ ParseResultDouble tryParseAmount(const std::string& amountStr)
     }
 }
 
-ParseDateResult tryParseDate(const std::string& dateStr)
-{
-    std::stringstream ss(dateStr);
-    ParseDateResult resultDate;
-    std::string day, month, year;
-    getline(ss, day, '.');
-    getline(ss, month, '.');
-    getline(ss, year, '.');
-    ParseResultInt resultDay = tryParseId(day);
-    ParseResultInt resultMonth = tryParseId(month);
-    ParseResultInt resultYear = tryParseId(year);
-    int howManyDaysThisMonthHas = daysOfMonth(resultMonth.value, resultYear.value);
-    resultDate.status=ParseStatus::Success;
-    if(resultDay.value<1 || resultDay.value>howManyDaysThisMonthHas)
-    {
-        resultDate.status=ParseStatus::InvalidArgument;
-    }
-    if(resultDay.status!=ParseStatus::Success || resultMonth.status!=ParseStatus::Success || resultYear.status!=ParseStatus::Success)
-    {
-        resultDate.status = ParseStatus::InvalidArgument;
-        resultDate.date =std::to_string(resultDay.value)+std::to_string(resultMonth.value)+std::to_string(resultYear.value);
-    }
-
-    if(resultDate.status==ParseStatus::Success)
-    {
-        resultDate.date = proceedDataToString(resultDay.value,resultMonth.value,resultYear.value);
-    }
-    return resultDate;
-}
 
 ParseResultDescription tryParseDescription(const std::string& description)
 {
@@ -88,28 +61,69 @@ ParseResultDescription tryParseDescription(const std::string& description)
     return resultDescription;
 }
 
-ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string&  amountStr,const std::string&  dateStr,const std::string&  description,
-                                           const std::string& categoryStr,const std::string&  typeStr)
+ParseDateDateResult tryParseDateDate(const std::string& dateDateStr)
+{
+    std::stringstream ss(dateDateStr);
+    ParseDateDateResult resultDate;
+    std::string dayStr,monthStr,yearStr;
+    getline(ss,dayStr,'.');
+    getline(ss,monthStr,'.');
+    getline(ss,yearStr);
+    ParseResultInt resultDay=tryParseId(dayStr);
+    ParseResultInt resultMonth=tryParseId(monthStr);
+    ParseResultInt resultYear=tryParseId(yearStr);
+    if(resultDay.status!=ParseStatus::Success || resultMonth.status!=ParseStatus::Success || resultYear.status!=ParseStatus::Success)
+    {
+        resultDate.status=ParseStatus::InvalidArgument;
+        resultDate.day=0;
+        resultDate.month=0;
+        resultDate.year=0;
+        return resultDate;
+    }
+    if(!Date::wholeDateValidation(resultDay.value,resultMonth.value,resultYear.value))
+    {
+        resultDate.status=ParseStatus::InvalidArgument;
+        resultDate.day=0;
+        resultDate.month=0;
+        resultDate.year=0;
+        return resultDate;
+    }
+    resultDate.status=ParseStatus::Success;
+    resultDate.day=resultDay.value;
+    resultDate.month=resultMonth.value;
+    resultDate.year=resultYear.value;
+    return resultDate;
+}
+
+ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string&  amountStr,const std::string&  description,
+                                           const std::string& categoryStr,const std::string&  typeStr,std::string& dateDateStr)
 {
     ParseTransactionResult resultTransaction;
     resultTransaction.status = ParseStatus::Success;
     ParseResultInt parseId = tryParseId(idStr);
     ParseResultDouble parseAmount = tryParseAmount(amountStr);
-    ParseDateResult parseDate = tryParseDate(dateStr);
+    ParseDateDateResult parseDateDate = tryParseDateDate(dateDateStr);
     ParseResultDescription parseDescription = tryParseDescription(description);
     Category category = stringToCategory(categoryStr);
     TransactionType type = stringToType(typeStr);
-    if(parseId.status!=ParseStatus::Success || parseAmount.status!=ParseStatus::Success || parseDate.status!=ParseStatus::Success || parseDescription.status!=ParseStatus::Success||
-       category==Category::other || type==TransactionType::unknown)
+    if(parseId.status!=ParseStatus::Success || parseAmount.status!=ParseStatus::Success || parseDescription.status!=ParseStatus::Success||
+       category==Category::other || type==TransactionType::unknown || parseDateDate.status!=ParseStatus::Success)
     {
         resultTransaction.status= ParseStatus::InvalidArgument;
     }
     resultTransaction.id=parseId.value;
     resultTransaction.amount=parseAmount.value;
-    resultTransaction.date=parseDate.date;
     resultTransaction.description = parseDescription.description;
     resultTransaction.category = category;
     resultTransaction.type=type;
+    try
+    {
+        resultTransaction.date=Date(parseDateDate.day,parseDateDate.month,parseDateDate.year);
+    }
+    catch(const std::invalid_argument)
+    {
+        resultTransaction.status=ParseStatus::InvalidArgument;
+    }
     return resultTransaction;
 }
 

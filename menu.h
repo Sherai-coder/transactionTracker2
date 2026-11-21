@@ -21,7 +21,6 @@ enum class FindTransactionBy
     ByAmount,
     ByType,
     ByCategory,
-    ByDate,
     Exit
 };
 
@@ -60,9 +59,8 @@ enum class ModifyChoices
     Amount=1,
     Type=2,
     Category=3,
-    Date=4,
-    Description=5,
-    Exit=6
+    Description,
+    Exit
 };
 class Menu
 {

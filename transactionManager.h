@@ -27,8 +27,8 @@ class TransactionManager
     int highestUsedIdFromFile;
     int highestUsedId=0;
 public:
-    std::optional<Transaction> createTransaction(int id, double amount, TransactionType type, Category category,const std::string dateStr,const std::string& description);
-    bool addTransaction(double amount,TransactionType type, Category category,const std::string dateStr,const std::string& description);
+    std::optional<Transaction> createTransaction(int id, double amount, TransactionType type, Category category,const std::string& description, Date date);
+    bool addTransaction(double amount,TransactionType type, Category category,const std::string& description, Date date);
     int setHighestUsedId();
 
     void showAllTransactions() const;
@@ -41,7 +41,7 @@ public:
     std::vector<Transaction>::iterator findTransactionByAmount(double amount);
     std::vector<Transaction>::iterator findTransactionByType(TransactionType type);
     std::vector<Transaction>::iterator findTransactionByCategory(Category category);
-    std::vector<Transaction>::iterator findTransactionByDate(const std::string& date);
+    //std::vector<Transaction>::iterator findTransactionByDate(const std::string& date);
 
     ///////////// Filter Transaction /////////////////
     template <typename SearchTransactionsBy>
@@ -76,8 +76,8 @@ public:
     void modifyAmountOfTransaction(std::vector<Transaction>::iterator it,double newAmount);
     void modifyTypeOfTransaction(std::vector<Transaction>::iterator it,TransactionType newType);
     void modifyCategoryOfTransaction(std::vector<Transaction>::iterator it,Category newCategory);
-    void modifyDateOfTransaction(std::vector<Transaction>::iterator it,const std::string& newDate);
-    void modifyDescriptionOfTransaction(std::vector<Transaction>::iterator it,const std::string& newDate);
+    //void modifyDateOfTransaction(std::vector<Transaction>::iterator it,const std::string& newDate);
+    void modifyDescriptionOfTransaction(std::vector<Transaction>::iterator it,const std::string& newDescription);
 
 
     bool removeTransaction(std::vector<Transaction>::iterator it);
@@ -89,6 +89,7 @@ public:
     /////////////////////// OPERATION WITH FILES ////////////////////////
     bool saveToFile();
     bool loadFromFile();
+    void addInvalidRecord(const std::string& line,const  std::string& reason);
 
 };
 

@@ -4,7 +4,7 @@
 
 Date::Date(int day, int month, int year)
 {
-    if(wholeDateValidation(day,month,year))
+    if(Date::wholeDateValidation(day,month,year))
     {
         this->day=day;
         this->month=month;
@@ -12,15 +12,13 @@ Date::Date(int day, int month, int year)
     }
     else
     {
-        day=0;
-        month=0;
-        year=0;
+        throw std::invalid_argument("Wrong date.");
     }
 }
 
 std::string Date::showDate() const
 {
-    return std::to_string(day)+":"+std::to_string(month)+":"+std::to_string(year);
+    return std::to_string(day)+"."+std::to_string(month)+"."+std::to_string(year);
 }
 
 int Date::getDay() const
@@ -105,4 +103,15 @@ bool Date::validationYear(int year)
         return true;
     }
     else return false;
+}
+bool Date::setDate(int day, int month , int year)
+{
+    if(!(wholeDateValidation(day,month,year)))
+    {
+        throw std::invalid_argument("Wrong date.");
+    }
+    this->day=day;
+    this->month=month;
+    this->year=year;
+    return true;
 }

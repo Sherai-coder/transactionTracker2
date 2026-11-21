@@ -121,15 +121,13 @@ optional<std::vector<Transaction>::iterator> Menu::findTransactionByMenu()
     string typeStr, categoryStr;
     TransactionType searchType;
     Category searchCategory;
-    string dateStr;
     std::vector<Transaction>::iterator it;
     cout<<"1. By id."<<endl;
     cout<<"2. By amount."<<endl;
     cout<<"3. By type."<<endl;
     cout<<"4. By category."<<endl;
-    cout<<"5. By date."<<endl;
-    cout<<"6. Exit."<<endl;
-    FindTransactionBy choice = static_cast<FindTransactionBy>(getInt("Choose: ",1,6));
+    cout<<"5. Exit."<<endl;
+    FindTransactionBy choice = static_cast<FindTransactionBy>(getInt("Choose: ",1,5));
     switch(choice)
     {
     case FindTransactionBy::ById:
@@ -160,13 +158,6 @@ optional<std::vector<Transaction>::iterator> Menu::findTransactionByMenu()
         it=transactions.findTransactionByCategory(stringToCategory(categoryStr));
          break;
     }
-    case FindTransactionBy::ByDate:
-    {
-        cout<<"Enter date: ";
-        cin>>dateStr;
-        it=transactions.findTransactionByDate(dateStr);
-         break;
-    }
     case FindTransactionBy::Exit:
     {
         cout<<"Return to main menu."<<endl;
@@ -187,11 +178,14 @@ void Menu::addTransactionMenu()
     double amount = getDouble("Enter amount: ",1,100000);
     TransactionType type = getTransactionType("Enter type: ");
     Category category = getCategoryType("Enter category: ");
-    string dateStr = returnDate("Enter date: ");
     string description = getDescription("Enter description (max 150 characters): ",1,150);
-    if(transactions.addTransaction(amount,type,category,dateStr,description))
+    optional<Date> date=returnDateDate("Enter date: ");
+    if(date.has_value())
+    {
+    if(transactions.addTransaction(amount,type,category,description,*date))
     {
         cout<<"Transaction successfully added."<<endl;
+    }
     }
     else cout<<"Cound't add transaction."<<endl;
     pause();
@@ -363,10 +357,9 @@ void Menu::modifyTransactionMenu()
     cout<<"1. Amount."<<endl;
     cout<<"2. Type."<<endl;
     cout<<"3. Category."<<endl;
-    cout<<"4. Date."<<endl;
-    cout<<"5. Description."<<endl;
-    cout<<"6. Exit."<<endl;
-    ModifyChoices choice = static_cast<ModifyChoices>(getInt("Choose: ",1,6));
+    cout<<"4. Description."<<endl;
+    cout<<"5. Exit."<<endl;
+    ModifyChoices choice = static_cast<ModifyChoices>(getInt("Choose: ",1,5));
     switch(choice)
     {
     case ModifyChoices::Amount:
@@ -382,11 +375,6 @@ void Menu::modifyTransactionMenu()
     case ModifyChoices::Category:
     {
         transactions.modifyCategoryOfTransaction(*it,getCategoryType("Enter new category: "));
-        break;
-    }
-    case ModifyChoices::Date:
-    {
-        transactions.modifyDateOfTransaction(*it,returnDate("Enter date: "));
         break;
     }
     case ModifyChoices::Description:

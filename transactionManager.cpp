@@ -8,31 +8,34 @@
 #include "parse.h"
 
 /////////////// Create Transaction / ADD transaction //////////////////////////
-std::optional<Transaction> TransactionManager::createTransaction(int id, double amount, TransactionType type, Category category,const std::string dateStr,const std::string& description)
+std::optional<Transaction> TransactionManager::createTransaction(int id, double amount, TransactionType type, Category category,const std::string& description, Date date)
 {
     switch(type)
     {
     case TransactionType::income:
     {
-        return Transaction(id,amount,type,category,dateStr,description);
+        return Transaction(id,amount,type,category,description,date);
     }
     case TransactionType::expenses:
     {
-        return Transaction(id,amount,type,category,dateStr,description);
+        return Transaction(id,amount,type,category,description,date);
     }
     default:
         return std::nullopt;
     }
 }
 
-bool TransactionManager::addTransaction(double amount,TransactionType type, Category category,const std::string dateStr,const std::string& description)
+bool TransactionManager::addTransaction(double amount,TransactionType type, Category category,const std::string& description, Date date)
 {
-    auto it = createTransaction(nextId,amount,type,category,dateStr,description);
+    auto it = createTransaction(nextId,amount,type,category,description,date);
     if(it!=std::nullopt)
     {
         transactions.push_back((*it));
+        nextId++;
+        return true;
     }
-    nextId++;
+    return false;
+
 }
 ////////////////////////////////// END ////////////////////////////////////////
 
@@ -83,13 +86,13 @@ std::vector<Transaction>::iterator TransactionManager::findTransactionByCategory
         return transaction.getCategory()==category;
     });
 }
-std::vector<Transaction>::iterator TransactionManager::findTransactionByDate(const std::string& dateStr)
+/*std::vector<Transaction>::iterator TransactionManager::findTransactionByDate(const std::string& dateStr)
 {
     return findTransactionBy([&dateStr] (Transaction& transaction)
     {
         return transaction.getDateStr()==dateStr;
     });
-}
+}*/
 
 ///////////////////////////     END   ///////////////////////////////////////
 
@@ -289,13 +292,13 @@ void TransactionManager::modifyCategoryOfTransaction(std::vector<Transaction>::i
         (*it).changeCategory(newCategory);
     }
 }
-void TransactionManager::modifyDateOfTransaction(std::vector<Transaction>::iterator it, const std::string& newDate)
+/*void TransactionManager::modifyDateOfTransaction(std::vector<Transaction>::iterator it, const std::string& newDate)
 {
     if(it!=transactions.end())
     {
         (*it).changeDate(newDate);
     }
-}
+}*/
 void TransactionManager::modifyDescriptionOfTransaction(std::vector<Transaction>::iterator it, const std::string& newDescription)
 {
     if(it!=transactions.end())
@@ -356,7 +359,7 @@ bool TransactionManager::saveToFile()
     for (const Transaction& transaction : transactions)
     {
         plik<<transaction.getId()<<"|"<<transaction.getAmount()<<"|"<<typeToString(transaction.getType())<<"|"<<categoryToString(transaction.getCategory())<<"|"<<
-            transaction.getDateStr()<<"|"<<transaction.getDescription()<<std::endl;
+        "|"<<transaction.getDescription()<<'|'<<dateToString(transaction.getDate())<<std::endl;
     }
     plik.close();
     return true;
@@ -371,7 +374,7 @@ bool TransactionManager::loadFromFile()
         return false;
     }
     std::string line;
-    std::string highestUsedIdStr,idStr, amountStr, typeStr,categoryStr, dateStr, descriptionStr;
+    std::string highestUsedIdStr,idStr, amountStr, typeStr,categoryStr, descriptionStr, dateDateStr;
     getline(plik,highestUsedIdStr);
     ParseResultInt highestUsedIdParse = tryParseId(highestUsedIdStr);
     if(highestUsedIdParse.status==ParseStatus::Success)
@@ -380,19 +383,46 @@ bool TransactionManager::loadFromFile()
     }
     while(getline(plik,line))
     {
-        std::stringstream ss(line);
-        getline(ss,idStr,'|');
-        getline(ss,amountStr,'|');
-        getline(ss,typeStr,'|');
-        getline(ss,categoryStr,'|');
-        getline(ss,dateStr,'|');
-        getline(ss,descriptionStr,'|');
+        std::cout<<"READING LINE: "<<line<<std::endl;
         ParseTransactionResult loadedTransaction;
         invalidTransactionRecord invalidLoadedRecords;
-        loadedTransaction = tryParseTransaction(idStr,amountStr,dateStr,descriptionStr,categoryStr,typeStr);
+        std::string invalidData, invalidReason;
+        std::stringstream ss(line);
+        if((!getline(ss,idStr,'|')) || (!getline(ss,amountStr,'|')) || (!getline(ss,typeStr,'|')) || (!getline(ss,categoryStr,'|')) ||
+                 (!getline(ss,descriptionStr,'|')) || (!getline(ss,dateDateStr,'|')) )
+        {
+            addInvalidRecord(line,"Missing record.");
+            continue;
+        }
+        else if(idStr.empty() || amountStr.empty() || typeStr.empty() || categoryStr.empty() || descriptionStr.empty() || dateDateStr.empty())
+        {
+            addInvalidRecord(line,"Missing record.");
+            continue;
+        }
+        else
+        {
+            loadedTransaction = tryParseTransaction(idStr,amountStr,descriptionStr,categoryStr,typeStr,dateDateStr);
+        }
         if(loadedTransaction.status==ParseStatus::Success)
         {
-            auto it = createTransaction(loadedTransaction.id,loadedTransaction.amount,loadedTransaction.type,loadedTransaction.category,loadedTransaction.date,loadedTransaction.description);
+            std::optional<Transaction> it;
+            try
+            {
+                it = createTransaction(loadedTransaction.id,loadedTransaction.amount,loadedTransaction.type,
+                                            loadedTransaction.category,loadedTransaction.description,*loadedTransaction.date);
+            }
+            catch(const std::invalid_argument& e)
+            {
+                invalidData = idStr+'|'+amountStr+'|'+typeStr+'|'+categoryStr+'|'+descriptionStr+'|'+dateDateStr;
+                invalidReason = statusToString(loadedTransaction.status);
+                addInvalidRecord(invalidData,invalidReason);
+            }
+            catch(const std::out_of_range& e)
+            {
+                invalidData = idStr+'|'+amountStr+'|'+typeStr+'|'+categoryStr+'|'+descriptionStr+'|'+dateDateStr;
+                invalidReason = statusToString(loadedTransaction.status);
+                addInvalidRecord(invalidData,invalidReason);
+            }
             if(it)
             {
                 transactions.push_back(*it);
@@ -400,11 +430,9 @@ bool TransactionManager::loadFromFile()
         }
         else
         {
-            std::string data = idStr+'|'+amountStr+'|'+typeStr+'|'+categoryStr+'|'+dateStr+'|'+descriptionStr;
-            std::string reason = statusToString(loadedTransaction.status);
-            invalidLoadedRecords.setData(data);
-            invalidLoadedRecords.setReason(reason);
-            invalidRecords.push_back(invalidLoadedRecords);
+            invalidData = idStr+'|'+amountStr+'|'+typeStr+'|'+categoryStr+'|'+descriptionStr+'|'+dateDateStr;
+            invalidReason = statusToString(loadedTransaction.status);
+            addInvalidRecord(invalidData,invalidReason);
         }
     }
     if(highestUsedIdFromFile>setHighestUsedId())
@@ -415,3 +443,10 @@ bool TransactionManager::loadFromFile()
     return true;
 }
 
+void TransactionManager::addInvalidRecord(const std::string& line,const  std::string& reason)
+{
+    invalidTransactionRecord invalidRecord;
+    invalidRecord.setData(line);
+    invalidRecord.setReason(reason);
+    invalidRecords.push_back(invalidRecord);
+}
