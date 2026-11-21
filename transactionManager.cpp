@@ -383,7 +383,6 @@ bool TransactionManager::loadFromFile()
     }
     while(getline(plik,line))
     {
-        std::cout<<"READING LINE: "<<line<<std::endl;
         ParseTransactionResult loadedTransaction;
         invalidTransactionRecord invalidLoadedRecords;
         std::string invalidData, invalidReason;
