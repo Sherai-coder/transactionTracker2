@@ -12,5 +12,5 @@ Category getCategoryType(const std::string& message);
 std::string getDescription(const std::string& message,const size_t& minRange, const size_t& maxRange);
 std::string getWord(const std::string);
 void pause();
-std::optional<Date> returnDateDate(const std::string& message);
+std::optional<Date> returnDate(const std::string& message);
 

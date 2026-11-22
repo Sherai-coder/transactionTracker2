@@ -150,6 +150,7 @@ double TransactionManager::showHighestExpense() const
             amount=transaction.getAmount();
         }
     }
+
     return amount;
 }
 
@@ -340,7 +341,11 @@ int TransactionManager::setHighestUsedId()
     {
         return transaction1.getId()<transaction2.getId();
     });
-    return (*it).getId();
+    if((*it).getId()>highestUsedIdFromFile)
+    {
+        return (*it).getId();
+    }
+    return highestUsedIdFromFile;
 }
 bool TransactionManager::saveToFile()
 {
@@ -358,8 +363,8 @@ bool TransactionManager::saveToFile()
     plik<<highestUsedId<<std::endl;
     for (const Transaction& transaction : transactions)
     {
-        plik<<transaction.getId()<<"|"<<transaction.getAmount()<<"|"<<typeToString(transaction.getType())<<"|"<<categoryToString(transaction.getCategory())<<"|"<<
-        "|"<<transaction.getDescription()<<'|'<<dateToString(transaction.getDate())<<std::endl;
+        plik<<transaction.getId()<<'|'<<transaction.getAmount()<<'|'<<typeToString(transaction.getType())<<'|'<<categoryToString(transaction.getCategory())<<'|'
+        <<transaction.getDescription()<<'|'<<dateToString(transaction.getDate())<<std::endl;
     }
     plik.close();
     return true;
@@ -412,6 +417,7 @@ bool TransactionManager::loadFromFile()
             }
             catch(const std::invalid_argument& e)
             {
+                std::cout<<"unssacesfull"<<std::endl;
                 invalidData = idStr+'|'+amountStr+'|'+typeStr+'|'+categoryStr+'|'+descriptionStr+'|'+dateDateStr;
                 invalidReason = statusToString(loadedTransaction.status);
                 addInvalidRecord(invalidData,invalidReason);

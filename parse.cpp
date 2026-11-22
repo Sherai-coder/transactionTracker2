@@ -61,10 +61,10 @@ ParseResultDescription tryParseDescription(const std::string& description)
     return resultDescription;
 }
 
-ParseDateDateResult tryParseDateDate(const std::string& dateDateStr)
+ParseDateResult tryParseDate(const std::string& dateStr)
 {
-    std::stringstream ss(dateDateStr);
-    ParseDateDateResult resultDate;
+    std::stringstream ss(dateStr);
+    ParseDateResult resultDate;
     std::string dayStr,monthStr,yearStr;
     getline(ss,dayStr,'.');
     getline(ss,monthStr,'.');
@@ -96,18 +96,18 @@ ParseDateDateResult tryParseDateDate(const std::string& dateDateStr)
 }
 
 ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string&  amountStr,const std::string&  description,
-                                           const std::string& categoryStr,const std::string&  typeStr,std::string& dateDateStr)
+                                           const std::string& categoryStr,const std::string&  typeStr,std::string& dateStr)
 {
     ParseTransactionResult resultTransaction;
     resultTransaction.status = ParseStatus::Success;
     ParseResultInt parseId = tryParseId(idStr);
     ParseResultDouble parseAmount = tryParseAmount(amountStr);
-    ParseDateDateResult parseDateDate = tryParseDateDate(dateDateStr);
+    ParseDateResult parseDate = tryParseDate(dateStr);
     ParseResultDescription parseDescription = tryParseDescription(description);
     Category category = stringToCategory(categoryStr);
     TransactionType type = stringToType(typeStr);
     if(parseId.status!=ParseStatus::Success || parseAmount.status!=ParseStatus::Success || parseDescription.status!=ParseStatus::Success||
-       category==Category::other || type==TransactionType::unknown || parseDateDate.status!=ParseStatus::Success)
+       category==Category::other || type==TransactionType::unknown || parseDate.status!=ParseStatus::Success)
     {
         resultTransaction.status= ParseStatus::InvalidArgument;
     }
@@ -118,7 +118,7 @@ ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::s
     resultTransaction.type=type;
     try
     {
-        resultTransaction.date=Date(parseDateDate.day,parseDateDate.month,parseDateDate.year);
+        resultTransaction.date=Date(parseDate.day,parseDate.month,parseDate.year);
     }
     catch(const std::invalid_argument)
     {

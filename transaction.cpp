@@ -46,7 +46,7 @@ std::string Transaction::saveDate(Date date)
     return day+'.'+month+'.'+year;
 }
 
-bool Transaction::dateSetDate(int day, int month, int year)
+bool Transaction::setNewDate(int day, int month, int year)
 {
     if(date.setDate(day,month,year))
     {
@@ -54,15 +54,17 @@ bool Transaction::dateSetDate(int day, int month, int year)
     }
     return false;
 }
-int Transaction::dateGetDay()
+
+
+int Transaction::getDay() const
 {
     return date.getDay();
 }
-int Transaction::dateGetMonth()
+int Transaction::getMonth() const
 {
     return date.getMonth();
 }
-int Transaction::dateGetYear()
+int Transaction::getYear() const
 {
     return date.getYear();
 }
@@ -111,7 +113,7 @@ void Transaction::changeCategory(Category newCategory)
     category=newCategory;
 }
 
-void Transaction::changeDescription(std::string newDescription)
+void Transaction::changeDescription(const std::string& newDescription)
 {
     if(newDescription.length()>150)
     {

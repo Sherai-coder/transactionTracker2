@@ -32,7 +32,7 @@ struct ParseResultDescription
 };
 
 
-struct ParseDateDateResult
+struct ParseDateResult
 {
     ParseStatus status;
     int day;
@@ -56,9 +56,9 @@ struct ParseTransactionResult
 ParseResultInt tryParseId(const std::string& idStr);
 ParseResultDouble tryParseAmount(const std::string& amountStr);
 ParseResultDescription tryParseDescription(const std::string& description);
-ParseDateDateResult tryParseDateDate(const std::string& dateDateStr);
+ParseDateResult tryParseDate(const std::string& dateStr);
 ParseTransactionResult tryParseTransaction(const std::string& idStr,const std::string& amountStr,const std::string&  description,
-                                           const std::string& categoryStr,const std::string&  typeStr, std::string& dateDateStr);
+                                           const std::string& categoryStr,const std::string&  typeStr, std::string& dateStr);
 
 
 

@@ -24,7 +24,7 @@ class TransactionManager
     std::vector<Transaction> transactions;
     std::vector<invalidTransactionRecord> invalidRecords;
     int nextId=highestUsedId+1;
-    int highestUsedIdFromFile;
+    int highestUsedIdFromFile=0;
     int highestUsedId=0;
 public:
     std::optional<Transaction> createTransaction(int id, double amount, TransactionType type, Category category,const std::string& description, Date date);

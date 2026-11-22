@@ -138,7 +138,7 @@ void pause()
     system("cls");
 }
 
-std::optional<Date> returnDateDate(const std::string& message)
+std::optional<Date> returnDate(const std::string& message)
 {
     std::cout<<message<<std::endl;
     int year = getInt("Enter year: ", 1, 2100);

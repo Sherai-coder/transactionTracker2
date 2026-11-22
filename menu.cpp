@@ -179,7 +179,7 @@ void Menu::addTransactionMenu()
     TransactionType type = getTransactionType("Enter type: ");
     Category category = getCategoryType("Enter category: ");
     string description = getDescription("Enter description (max 150 characters): ",1,150);
-    optional<Date> date=returnDateDate("Enter date: ");
+    optional<Date> date=returnDate("Enter date: ");
     if(date.has_value())
     {
     if(transactions.addTransaction(amount,type,category,description,*date))

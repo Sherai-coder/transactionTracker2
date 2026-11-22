@@ -109,15 +109,7 @@ std::string categoryToString(Category category)
     }
 }
 
-std::string proceedDataToString(int day, int month, int year)
-{
-    return std::to_string(day)+"."+std::to_string(month)+"."+std::to_string(year);
-}
-
 std::string dateToString(Date date)
 {
-    int day=date.getDay();
-    int month=date.getMonth();
-    int year=date.getYear();
-    return std::to_string(day)+'.'+std::to_string(month)+'.'+std::to_string(year);
+    return std::to_string(date.getDay())+'.'+std::to_string(date.getMonth())+'.'+std::to_string(date.getYear());
 }
