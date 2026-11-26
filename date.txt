@@ -1,3 +1,28 @@
-2
+110
 1|100|income|work|kam|1.12.202
-2|200|income|work|kasm|1.1.202
+2|45.5|expenses|food|Weekly groceries|2.11.2026
+3|30|expenses|car|Petrol|3.11.2026
+4|12.99|expenses|food|Lunch|4.11.2026
+5|85|expenses|home|Electricity bill|5.11.2026
+6|20|expenses|gym|Protein powder|6.11.2026
+7|15|expenses|food|Coffee and snacks|7.11.2026
+8|60|expenses|car|Car wash|8.11.2026
+9|120|expenses|home|Internet bill|9.11.2026
+10|25|expenses|food|Dinner|10.11.2026
+11|50|expenses|gym|Gym membership|11.11.2026
+12|200|expenses|car|Car service|12.11.2026
+13|35|expenses|food|Restaurant|13.11.2026
+14|70|expenses|home|Household supplies|14.11.2026
+15|200|income|work|kasm|1.1.202
+16|100|income|work|w|1.1.1
+17|1000|income|work|bsda|1.1.1
+18|100|income|work|1|1.1.1
+19|40|expenses|holiday|Hotel booking|15.11.2026
+20|18|expenses|food|Groceries|16.11.2026
+21|55|expenses|car|Petrol|17.11.2026
+22|90|expenses|home|Water bill|18.11.2026
+23|28|expenses|gym|Boxing equipment|19.11.2026
+100|1|income|work|1|1.1.1
+107|100|income|work|as|1.1.1
+108|180|expenses|holiday|Travel activities|20.11.2026
+109|2000|income|business|cos tam|1.1.2

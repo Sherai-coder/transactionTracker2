@@ -28,7 +28,8 @@ void Menu::mainMenu()
         cout<<"8. Modify transaction."<<endl;
         cout<<"9. Remove transaction."<<endl;
         cout<<"10. Exit."<<endl;
-        MainMenuOption choice = static_cast<MainMenuOption>(getInt("Choose: ",1,10));
+        cout<<"11. calculate Procent of each expenses template."<<endl;
+        MainMenuOption choice = static_cast<MainMenuOption>(getInt("Choose: ",1,11));
         switch(choice)
         {
         case MainMenuOption::ShowAllTransactions:
@@ -81,6 +82,18 @@ void Menu::mainMenu()
             cout<<"Goodbye."<<endl;
             return;
         }
+        case MainMenuOption::CalculateProcentTemplate:
+            {
+                 cout<<"Wynik income work: "<<transactions.calculateProcentIncomeFromWork()<<"%"<<endl;
+                 cout<<"Wynik income business: "<<transactions.calculateProcentIncomeFromBusiness()<<"%"<<endl;
+                 cout<<"Wynik expenses car: "<<transactions.calculateProcentExpensesOnCar()<<"%"<<endl;
+                 cout<<"Wynik expenses home: "<<transactions.calculateProcentExpensesOnHome()<<"%"<<endl;
+                 cout<<"Wynik expenses holiday: "<<transactions.calculateProcentExpensesOnHoliday()<<"%"<<endl;
+                 cout<<"Wynik expenses gym: "<<transactions.calculateProcentExpensesOnGym()<<"%"<<endl;
+                 cout<<"Wynik expenses other: "<<transactions.calculateProcentExpensesOnOther()<<"%"<<endl;
+                 pause();
+                break;
+            }
         default:
             {
                 cout<<"There is no such option in menu."<<endl;
@@ -301,7 +314,7 @@ void Menu::makeSpecificCalculationsMenu()
     }
     case ShowSpecificCalculation::ExpensesOnCar:
     {
-        amount = transactions.calculateTotalExpensesOnCar();
+      //  amount = transactions.calculateTotalExpensesOnCar();
         break;
     }
     case ShowSpecificCalculation::ExpensesOnHome:
@@ -338,7 +351,7 @@ void Menu::makeSpecificCalculationsMenu()
 
 void Menu::calculateProcentOfEachExpensesMenu()
 {
-    transactions.calculateProcentOfEachExpenses();
+   // transactions.calculateProcentOfExpensesOnCar(Category::car);
     pause();
 }
 

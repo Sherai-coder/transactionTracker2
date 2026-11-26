@@ -47,7 +47,7 @@ bool Date::wholeDateValidation(int day,int month,int year)
 }
 bool Date::checkLeapYearDate(int year)
 {
-    if((year%4==0 && year%100!=0) || year&400==0)
+    if((year%4==0 && year%100!=0) || (year&400==0))
     {
         return true;
     }

@@ -23,9 +23,7 @@ class TransactionManager
 {
     std::vector<Transaction> transactions;
     std::vector<invalidTransactionRecord> invalidRecords;
-    int nextId=highestUsedId+1;
-    int highestUsedIdFromFile=0;
-    int highestUsedId=0;
+    int nextId;
 public:
     std::optional<Transaction> createTransaction(int id, double amount, TransactionType type, Category category,const std::string& description, Date date);
     bool addTransaction(double amount,TransactionType type, Category category,const std::string& description, Date date);
@@ -59,17 +57,41 @@ public:
     double calculateAmount(CalculateWhat calculatewhat) const;
     double calculateTotalIncome() const;
     double calculateTotalExpenses() const;
-    double calculateTotalIncomeFromWork() const;
-    double calculateTotalIncomeFromBusiness() const;
+    //////////// expeness OF //////////////
     double calculateTotalExpensesOnCar() const;
     double calculateTotalExpensesOnHome() const;
     double calculateTotalExpensesOnHoliday() const;
     double calculateTotalExpensesOnGym() const;
     double calculateTotalExpensesOnOther() const;
+    ///////////// total income From ////////////
+    double calculateTotalIncomeFromWork() const;
+    double calculateTotalIncomeFromBusiness() const;
 
+    template <typename ProcentOf>
+    int calculateProcentOfIncome(ProcentOf procentOf) const;
+    double calculateProcentIncomeFromWork() const;
+    double calculateProcentIncomeFromBusiness() const;
+
+
+    template <typename ProcentOf>
+    int calculateProcentOfExpenses(ProcentOf procentOf) const;
+    double calculateProcentExpensesOnCar() const;
+    double calculateProcentExpensesOnHome() const;
+    double calculateProcentExpensesOnHoliday() const;
+    double calculateProcentExpensesOnGym() const;
+    double calculateProcentExpensesOnOther() const;
+
+    /////////////////////////// INCOME ///////////////////////////////
+
+
+
+    //double calculateProcentExpensesOnCar() const;
+    auto lambda(Category category) const;
 
     ///////////////// Calculation % of Expenses///////////////////////////
     void calculateProcentOfEachExpenses() const;
+
+
 
 
     /////////////////// Modify Transaction ////////////////////////////
@@ -93,6 +115,35 @@ public:
 
 };
 
+template <typename ProcentOf>
+int TransactionManager::calculateProcentOfExpenses(ProcentOf procentOf) const
+{
+    if(transactions.empty())
+    {
+        return 0;
+    }
+    double amount=accumulate(transactions.begin(), transactions.end(), 0.0, procentOf);
+    if(calculateTotalExpenses()<=0 || amount<=0)
+    {
+        return 0;
+    }
+    return (amount/calculateTotalExpenses())*100;
+}
+
+template <typename ProcentOf>
+int TransactionManager::calculateProcentOfIncome(ProcentOf procentOf) const
+{
+    if(transactions.empty())
+    {
+        return 0;
+    }
+    double amount = accumulate(transactions.begin(), transactions.end(), 0.0, procentOf);
+    if(calculateTotalIncome()<=0 || amount<=0)
+    {
+        return 0;
+    }
+    return (amount/calculateTotalIncome())*100;
+}
 
 
 template <typename FindHow>
@@ -121,7 +172,9 @@ std::vector<Transaction> TransactionManager::showTransactionsBy(SearchTransactio
 template <typename CalculateWhat>
 double TransactionManager::calculateAmount(CalculateWhat calculatewhat) const
 {
-    double amount= 0.0;
-    amount = accumulate(transactions.begin(), transactions.end(),0.0, calculatewhat);
-    return amount;
+    if(transactions.empty())
+    {
+        return 0.0;
+    }
+    return accumulate(transactions.cbegin(), transactions.cend(), 0.0,calculatewhat);
 }

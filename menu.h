@@ -12,7 +12,8 @@ enum class MainMenuOption
     CalculateProcentOfEachExpenses,
     ModifyTransaction,
     RemoveTransaction,
-    Exit
+    Exit,
+    CalculateProcentTemplate
 };
 
 enum class FindTransactionBy

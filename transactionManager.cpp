@@ -135,6 +135,90 @@ std::vector<Transaction> TransactionManager::showTransactionsByCategory(Category
 }
 ///////////////////////////////// END //////////////////////////////////////
 
+///////////////// CALCULATE PROCENT OF INCOME FROM ////////////////////////
+double TransactionManager::calculateProcentIncomeFromWork() const
+{
+    return calculateProcentOfIncome([](double total, const Transaction& transaction)
+                                    {
+                                       if(transaction.getCategory()==Category::work)
+                                       {
+                                           return total+transaction.getAmount();
+                                       }
+                                       return total;
+                                    });
+}
+double TransactionManager::calculateProcentIncomeFromBusiness() const
+{
+    return calculateProcentOfIncome([](double total, const Transaction& transaction)
+                                    {
+                                        if(transaction.getCategory()==Category::business)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                    });
+}
+///////////////////////////// END //////////////////////////////
+
+
+
+///////////////////// CALCULATION PROCENT OF EACH EXPENSES//////////////////////////////////
+double TransactionManager::calculateProcentExpensesOnCar() const
+{
+    return calculateProcentOfExpenses([](double total, const Transaction& transaction)
+                                      {
+                                          if(transaction.getCategory()==Category::car)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                      });
+}
+double TransactionManager::calculateProcentExpensesOnHome() const
+{
+    return calculateProcentOfExpenses([](double total, const Transaction& transaction)
+                                      {
+                                          if(transaction.getCategory()==Category::home)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                      });
+}
+double TransactionManager::calculateProcentExpensesOnHoliday() const
+{
+    return calculateProcentOfExpenses([](double total, const Transaction& transaction)
+                                      {
+                                          if(transaction.getCategory()==Category::holiday)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                      });
+}
+double TransactionManager::calculateProcentExpensesOnGym() const
+{
+    return calculateProcentOfExpenses([](double total, const Transaction& transaction)
+                                      {
+                                          if(transaction.getCategory()==Category::gym)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                      });
+}
+double TransactionManager::calculateProcentExpensesOnOther() const
+{
+    return calculateProcentOfExpenses([](double total, const Transaction& transaction)
+                                      {
+                                          if(transaction.getCategory()==Category::other)
+                                        {
+                                            return total+transaction.getAmount();
+                                        }
+                                        return total;
+                                      });
+}
+
 ////////////////////////// CALCULATION /////////////////////////////////
 double TransactionManager::showHighestExpense() const
 {
@@ -160,8 +244,7 @@ double TransactionManager::calculateCurrentBalance() const
 }
 //////////////////////////////////////////////////////////////
 
-
-///////////////// Calculation Categories Amount //////////////////////
+////////////////////////////// CALCULATION TOTAL  INCOME/ EXPENSES///////////////////////////////
 double TransactionManager::calculateTotalIncome() const
 {
     return calculateAmount([](double amount, const Transaction& transaction)
@@ -184,6 +267,8 @@ double TransactionManager::calculateTotalExpenses() const
         else return amount;
     });
 }
+///////////////// Calculation Categories Amount INCOME //////////////////////
+
 double TransactionManager::calculateTotalIncomeFromWork() const
 {
     return calculateAmount([](double amount,const Transaction& transaction)
@@ -206,6 +291,9 @@ double TransactionManager::calculateTotalIncomeFromBusiness() const
         else return amount;
     });
 }
+
+
+//////////// CALCULATE TOTAL EXPENSES OF //////////////////////////
 double TransactionManager::calculateTotalExpensesOnCar() const
 {
     return calculateAmount([](double amount,const Transaction& transaction)
@@ -263,14 +351,46 @@ double TransactionManager::calculateTotalExpensesOnOther() const
 }
 //////////////////////////////////////////////////////////////////////
 
-void TransactionManager::calculateProcentOfEachExpenses() const
+auto TransactionManager::lambda(Category category) const
 {
-    std::cout<<"Car: "<<(calculateTotalExpensesOnCar()/calculateTotalExpenses())*100<<"%"<<std::endl;
-    std::cout<<"Home: "<<(calculateTotalExpensesOnHome()/calculateTotalExpenses())*100<<"%"<<std::endl;
-    std::cout<<"Holiday: "<<(calculateTotalExpensesOnHoliday()/calculateTotalExpenses())*100<<"%"<<std::endl;
-    std::cout<<"Gym: "<<(calculateTotalExpensesOnGym()/calculateTotalExpenses())*100<<"%"<<std::endl;
-    std::cout<<"Other: "<<(calculateTotalExpensesOnOther()/calculateTotalExpenses())*100<<"%"<<std::endl;
+    return ([category] (double total, const Transaction& transaction)
+            {
+               if(transaction.getType()==TransactionType::expenses && transaction.getCategory()==category)
+               {
+                   total+transaction.getAmount();
+               }
+               return total;
+            });
 }
+
+
+/////////////////////////////// TEMPLATE /////////////////////////////
+/*void TransactionManager::calculateProcentOfEachExpenses() const
+{
+    int car, home, holiday, gym, other;
+    if(calculateTotalExpenses()==0)
+    {
+        std::cout<<"There is no expenses."<<std::endl;
+        return;
+    }
+    int procentExpensesOnCar = calculateProcentOfExpenses(lambda(Category::car));
+
+    int procentExpensesOnHome = calculateProcentOfExpenses(lambda(Category::home));
+    int procentExpensesOnHoliday = calculateProcentOfExpenses(lambda(Category::holiday));
+    int procentExpensesOnGym = calculateProcentOfExpenses(lambda(Category::gym));
+    int procentExpensesOnOther = calculateProcentOfExpenses(lambda(Category::other));
+    std::cout<<"Car: "<<procentExpensesOnCar<<"%"<<std::endl;
+    std::cout<<"Home: "<<procentExpensesOnHome<<"%"<<std::endl;
+    std::cout<<"Holiday: "<<procentExpensesOnHoliday<<"%"<<std::endl;
+    std::cout<<"Gym: "<<procentExpensesOnGym<<"%"<<std::endl;
+    std::cout<<"Other: "<<procentExpensesOnOther<<"%"<<std::endl;
+}*/
+
+
+
+
+
+
 ////////////////////////// Modify TRansaction ///////////////////////////////
 void TransactionManager::modifyAmountOfTransaction(std::vector<Transaction>::iterator it,double newAmount)
 {
@@ -341,11 +461,7 @@ int TransactionManager::setHighestUsedId()
     {
         return transaction1.getId()<transaction2.getId();
     });
-    if((*it).getId()>highestUsedIdFromFile)
-    {
-        return (*it).getId();
-    }
-    return highestUsedIdFromFile;
+    return (*it).getId();
 }
 bool TransactionManager::saveToFile()
 {
@@ -359,12 +475,11 @@ bool TransactionManager::saveToFile()
     {
         return false;
     }
-    highestUsedId=setHighestUsedId();
-    plik<<highestUsedId<<std::endl;
+    plik<<nextId<<std::endl;
     for (const Transaction& transaction : transactions)
     {
         plik<<transaction.getId()<<'|'<<transaction.getAmount()<<'|'<<typeToString(transaction.getType())<<'|'<<categoryToString(transaction.getCategory())<<'|'
-        <<transaction.getDescription()<<'|'<<dateToString(transaction.getDate())<<std::endl;
+            <<transaction.getDescription()<<'|'<<dateToString(transaction.getDate())<<std::endl;
     }
     plik.close();
     return true;
@@ -382,10 +497,6 @@ bool TransactionManager::loadFromFile()
     std::string highestUsedIdStr,idStr, amountStr, typeStr,categoryStr, descriptionStr, dateDateStr;
     getline(plik,highestUsedIdStr);
     ParseResultInt highestUsedIdParse = tryParseId(highestUsedIdStr);
-    if(highestUsedIdParse.status==ParseStatus::Success)
-    {
-        highestUsedIdFromFile = highestUsedIdParse.value;
-    }
     while(getline(plik,line))
     {
         ParseTransactionResult loadedTransaction;
@@ -393,7 +504,7 @@ bool TransactionManager::loadFromFile()
         std::string invalidData, invalidReason;
         std::stringstream ss(line);
         if((!getline(ss,idStr,'|')) || (!getline(ss,amountStr,'|')) || (!getline(ss,typeStr,'|')) || (!getline(ss,categoryStr,'|')) ||
-                 (!getline(ss,descriptionStr,'|')) || (!getline(ss,dateDateStr,'|')) )
+                (!getline(ss,descriptionStr,'|')) || (!getline(ss,dateDateStr,'|')) )
         {
             addInvalidRecord(line,"Missing record.");
             continue;
@@ -413,7 +524,7 @@ bool TransactionManager::loadFromFile()
             try
             {
                 it = createTransaction(loadedTransaction.id,loadedTransaction.amount,loadedTransaction.type,
-                                            loadedTransaction.category,loadedTransaction.description,*loadedTransaction.date);
+                                       loadedTransaction.category,loadedTransaction.description,*loadedTransaction.date);
             }
             catch(const std::invalid_argument& e)
             {
@@ -440,13 +551,17 @@ bool TransactionManager::loadFromFile()
             addInvalidRecord(invalidData,invalidReason);
         }
     }
-    if(highestUsedIdFromFile>setHighestUsedId())
+    if(highestUsedIdParse.status==ParseStatus::Success)
     {
-        highestUsedId=highestUsedIdFromFile;
+        if(highestUsedIdParse.value<=setHighestUsedId())
+        {
+            nextId=setHighestUsedId()+1;
+        }
+        else nextId=highestUsedIdParse.value;
     }
-
     return true;
 }
+
 
 void TransactionManager::addInvalidRecord(const std::string& line,const  std::string& reason)
 {
